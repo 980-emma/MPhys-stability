@@ -133,16 +133,16 @@ class Batch:
                 df_filtered = self.data[self.data[['substrate', 'pixel']].apply(tuple, axis=1).isin(filtered_list)].copy()  # Create a copy to avoid SettingWithCopyWarning
                 df_filtered[numeric_cols] = df_filtered[numeric_cols].apply(pd.to_numeric)  # Convert numeric columns to appropriate data types
 
-                # Compute mean values of numeric columns grouped by 'time (hrs)'
-                df_mean = df_filtered.groupby('time (hrs)').mean(numeric_only=True).reset_index()
+                # Compute median values of numeric columns grouped by 'time (hrs)'
+                df_median = df_filtered.groupby('time (hrs)').median(numeric_only=True).reset_index()
 
-                # Plot the mean Voc time series across all pixels
-                mean_line, = ax.plot(df_mean['time (hrs)'], df_mean[measure], color=config_color, alpha=1, linewidth=2)  # Plot the mean data
+                # Plot the median Voc time series across all pixels
+                median_line, = ax.plot(df_median['time (hrs)'], df_median[measure], color=config_color, alpha=1, linewidth=2)  # Plot the median data
                 ax.set_xlabel('time (hrs)')
                 ax.set_ylabel(measure)
-                ax.set_ylim(bottom=0)
+                ax.set_ylim(bottom=0, top=1.1*max(df_filtered[measure]))  # Set y-axis limits
                 
-                handles[config] = mean_line
+                handles[config] = median_line
         
         fig.legend(handles=handles.values(), labels=handles.keys(), title='Configuration', title_fontsize=10, bbox_to_anchor=(1, 0.8), fontsize=10, frameon=False)
 
